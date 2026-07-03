@@ -1,0 +1,9 @@
+# 編譯結果
+*.exe
+*.o
+
+# VS Code 設定
+.vscode/
+
+# 暫存檔
+*.log
