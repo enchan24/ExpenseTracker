@@ -1,12 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define FOOD 1
+#define TRANSPORT 2
+#define ENTERTAINMENT 3
+
+#define BALANCE_FILE "balance.txt"
+#define RECORD_FILE "record.txt"
+
 struct record{
 	char type;
 	int amount;
-	char category;
+	int category;
 };
-void showmenu(void){
+void showMenu(void){
 	printf("\n=====記帳程式=====\n");
     printf("1.新增收入\n");
     printf("2.新增支出\n");
@@ -18,9 +25,9 @@ void showmenu(void){
     printf("0.離開\n");
 }
 
-int loadmoney(void){
+int loadMoney(void){
 	int sum = 0;
-	FILE *fp = fopen("money.txt", "r");
+	FILE *fp = fopen("BALANCE_FILE", "r");
 	if(fp != NULL){
 	    fscanf(fp, "%d", &sum);
 	    fclose(fp);
@@ -30,8 +37,8 @@ int loadmoney(void){
 	return sum;
 }
 
-void savemoney(int sum){
-	FILE *fp = fopen("money.txt", "w");
+void saveMoney(int sum){
+	FILE *fp = fopen("BALANCE_FILE", "w");
 	if(fp != NULL){
 		fprintf(fp, "%d", sum);
 		fclose(fp);
@@ -40,18 +47,18 @@ void savemoney(int sum){
 	}
 }
 
-void saverecord(struct record r){
-	FILE *fc = fopen("money1.txt","a");
+void saveRecord(struct record r){
+	FILE *fc = fopen("RECORD_FILE","a");
 	if(fc != NULL){
 		fprintf(fc,"%c %d %d\n",r.type,r.amount,r.category);
 		fclose(fc);
 	}
 }
 
-void showrecord(void){
+void showRecord(void){
 	struct record r;
-	FILE *fc = fopen("money1.txt","r");
-	FILE *fp = fopen("money.txt","r");
+	FILE *fc = fopen("RECORD_FILE","r");
+	FILE *fp = fopen("BALANCE_FILE","r");
 	if(fc == NULL && fp == NULL){
 		printf("沒有紀錄。\n");
 		return;
@@ -64,9 +71,9 @@ void showrecord(void){
 	fclose(fp);
 }
 
-void query_expence(void){
+void query_expense(void){
 	struct record r;
-	FILE *fc = fopen("money1.txt","r");
+	FILE *fc = fopen("RECORD_FILE","r");
 	if(fc == NULL){
 		printf("沒有紀錄。\n");
 		return;
@@ -80,10 +87,10 @@ void query_expence(void){
 	fclose(fc);
 }
 
-void query_expence_sum(void){
+void query_expense_sum(void){
 	struct record r;
 	int sum = 0,food = 0,trn = 0,ent = 0;
-	FILE *fc = fopen("money1.txt","r");
+	FILE *fc = fopen("RECORD_FILE","r");
 	if(fc == NULL){
 		printf("沒有紀錄。\n");
 		return;
@@ -91,11 +98,11 @@ void query_expence_sum(void){
 	while(fscanf(fc," %c%d%d",&r.type,&r.amount,&r.category) == 3){
 		if(r.type == '-'){
 			sum += r.amount;
-			if(r.category == 1){
+			if(r.category == FOOD){
 				food += r.amount;
-			}else if(r.category == 2){
+			}else if(r.category == TRANSPORT){
 				trn += r.amount;
-			}else if(r.category == 3){
+			}else if(r.category == ENTERTAINMENT){
 				ent += r.amount;
 			} 
 		}
@@ -111,16 +118,15 @@ void reset_file(void){
 
     FILE *fp;
 
-    fp = fopen("money1.txt","w");
+    fp = fopen("RECORD_FILE","w");
     if(fp != NULL)
         fclose(fp);
 
-    fp = fopen("money.txt","w");
+    fp = fopen("BALANCE_FILE","w");
     if(fp != NULL){
         fprintf(fp,"0");
         fclose(fp);
     }
-
     printf("所有資料已清除\n");
 }
 
@@ -128,8 +134,8 @@ int main(){
     int mon,sum=0;
     int running = 1;
     char op;
-    sum = loadmoney();
-	showmenu();
+    sum = loadMoney();
+	showMenu();
 	while(running){
 		printf("\n請輸入:");
 		scanf(" %c",&op);
@@ -140,7 +146,7 @@ int main(){
 				scanf("%d",&r.amount);
 				r.type = '+';
 				r.category = 0;
-				saverecord(r);
+				saveRecord(r);
 				sum += r.amount;
 				break;
 			}
@@ -148,10 +154,10 @@ int main(){
 				struct record r;
 				printf("請輸入支出:");
 				scanf("%d",&r.amount);
-				printf("請選分類\n1食物\n2交通\n3娛樂:\n");
+				printf("請選分類:\n1食物\n2交通\n3娛樂\n");
 				scanf("%d", &r.category);
 				r.type = '-';
-				saverecord(r);
+				saveRecord(r);
 				sum -= r.amount;
 				break;
 			}
@@ -160,15 +166,15 @@ int main(){
 				break;
 			}
 			case '4':{
-				showrecord();
+				showRecord();
 				break;
 			}
 			case '5':{
-				query_expence();
+				query_expense();
 				break;
 			}
 			case '6':{
-				query_expence_sum();
+				query_expense_sum();
 				break;
 			}
 			case '9':{
@@ -177,12 +183,12 @@ int main(){
 			}
 			case '0':{
 				printf("程式結束。");
-				savemoney(sum);
+				saveMoney(sum);
 				running = 0;
 				break;
 			}
 			default:{
-				printf("輸入字元錯誤，請輸入 0~3。\n");
+				printf("輸入字元錯誤，請輸入 0~6 或 9。\n");
 				break;
 			}
 		}
