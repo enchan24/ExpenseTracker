@@ -5,8 +5,8 @@
 #define TRANSPORT 2
 #define ENTERTAINMENT 3
 
-#define BALANCE_FILE "balance.txt"
-#define RECORD_FILE "record.txt"
+#define BALANCE_FILE "data/balance.txt"
+#define RECORD_FILE "data/record.txt"
 
 struct record{
 	char type;
@@ -27,7 +27,7 @@ void showMenu(void){
 
 int loadMoney(void){
 	int sum = 0;
-	FILE *fp = fopen("BALANCE_FILE", "r");
+	FILE *fp = fopen(BALANCE_FILE, "r");
 	if(fp != NULL){
 	    fscanf(fp, "%d", &sum);
 	    fclose(fp);
@@ -38,7 +38,7 @@ int loadMoney(void){
 }
 
 void saveMoney(int sum){
-	FILE *fp = fopen("BALANCE_FILE", "w");
+	FILE *fp = fopen(BALANCE_FILE, "w");
 	if(fp != NULL){
 		fprintf(fp, "%d", sum);
 		fclose(fp);
@@ -48,7 +48,7 @@ void saveMoney(int sum){
 }
 
 void saveRecord(struct record r){
-	FILE *fc = fopen("RECORD_FILE","a");
+	FILE *fc = fopen(RECORD_FILE,"a");
 	if(fc != NULL){
 		fprintf(fc,"%c %d %d\n",r.type,r.amount,r.category);
 		fclose(fc);
@@ -57,8 +57,8 @@ void saveRecord(struct record r){
 
 void showRecord(void){
 	struct record r;
-	FILE *fc = fopen("RECORD_FILE","r");
-	FILE *fp = fopen("BALANCE_FILE","r");
+	FILE *fc = fopen(RECORD_FILE,"r");
+	FILE *fp = fopen(BALANCE_FILE,"r");
 	if(fc == NULL && fp == NULL){
 		printf("沒有紀錄。\n");
 		return;
@@ -71,9 +71,9 @@ void showRecord(void){
 	fclose(fp);
 }
 
-void query_expense(void){
+void queryExpense(void){
 	struct record r;
-	FILE *fc = fopen("RECORD_FILE","r");
+	FILE *fc = fopen(RECORD_FILE,"r");
 	if(fc == NULL){
 		printf("沒有紀錄。\n");
 		return;
@@ -87,10 +87,10 @@ void query_expense(void){
 	fclose(fc);
 }
 
-void query_expense_sum(void){
+void queryExpenseSum(void){
 	struct record r;
-	int sum = 0,food = 0,trn = 0,ent = 0;
-	FILE *fc = fopen("RECORD_FILE","r");
+	int sum = 0,foodExpense = 0,transportExpense = 0,entertainmentExpense = 0;
+	FILE *fc = fopen(RECORD_FILE,"r");
 	if(fc == NULL){
 		printf("沒有紀錄。\n");
 		return;
@@ -99,30 +99,30 @@ void query_expense_sum(void){
 		if(r.type == '-'){
 			sum += r.amount;
 			if(r.category == FOOD){
-				food += r.amount;
+				foodExpense += r.amount;
 			}else if(r.category == TRANSPORT){
-				trn += r.amount;
+				transportExpense += r.amount;
 			}else if(r.category == ENTERTAINMENT){
-				ent += r.amount;
+				entertainmentExpense += r.amount;
 			} 
 		}
 	}
 	fclose(fc);
 	printf("支出總額:%d\n",sum);
-	printf("食物支出總額:%d\n",food);
-	printf("交通支出總額:%d\n",trn);
-	printf("娛樂支出總額:%d\n",ent);
+	printf("食物支出總額:%d\n",foodExpense);
+	printf("交通支出總額:%d\n",transportExpense);
+	printf("娛樂支出總額:%d\n",entertainmentExpense);
 }
 
-void reset_file(void){
+void resetFile(void){
 
     FILE *fp;
 
-    fp = fopen("RECORD_FILE","w");
+    fp = fopen(RECORD_FILE,"w");
     if(fp != NULL)
         fclose(fp);
 
-    fp = fopen("BALANCE_FILE","w");
+    fp = fopen(BALANCE_FILE,"w");
     if(fp != NULL){
         fprintf(fp,"0");
         fclose(fp);
@@ -131,7 +131,7 @@ void reset_file(void){
 }
 
 int main(){
-    int mon,sum=0;
+    int sum=0;
     int running = 1;
     char op;
     sum = loadMoney();
@@ -170,15 +170,15 @@ int main(){
 				break;
 			}
 			case '5':{
-				query_expense();
+				queryExpense();
 				break;
 			}
 			case '6':{
-				query_expense_sum();
+				queryExpenseSum();
 				break;
 			}
 			case '9':{
-				reset_file();
+				resetFile();
 				break;
 			}
 			case '0':{
